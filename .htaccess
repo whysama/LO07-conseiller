@@ -1,0 +1,10 @@
+RewriteEngine On
+
+#需要更改为localhost之后，.htaccess所在文件夹
+RewriteBase /~young/Conseiller/
+
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-l
+
+RewriteRule ^(.+)$ index.php?url=$1 [QSA,L]
