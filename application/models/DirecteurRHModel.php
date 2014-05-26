@@ -48,7 +48,7 @@ class DirecteurRHModel{
         $sql = "SELECT nom,prenom FROM EC";
         $query = $this->db->prepare($sql);
         $query->execute();
-        foreach ($query as $ec) {
+        foreach ($query->fetchAll() as $ec) {
             if ($ec->nom == $nom && $ec->prenom == $prenom) {
                 echo "l'enseignant-chercheur ".$prenom." ".$nom." est déjà existé.";
                 return false;

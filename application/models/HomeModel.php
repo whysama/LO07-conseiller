@@ -24,6 +24,9 @@ class HomeModel{
                     break;
                 case 'DRH':
                     return "DirecteurRH";
+                case 'SS':
+                    return "ServiceScolarite";
+                    break;
                 default:
                     return "Responsable";
                     break;
