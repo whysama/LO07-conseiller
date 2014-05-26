@@ -44,4 +44,28 @@ class ServiceScolariteModel {
              $query->execute(array($nom,$prenom,$email,$programme,$semestre));
              return true;
         }
+
+    public function ETU_ajout_liste($filename){
+        require 'public/tools/tools.php';
+        $etu = getCSV($filename);
+        $sql = "INSERT INTO ETU VALUE(?,?,?,?,?,?)";
+        $query = $this->db->prepare($sql);
+        foreach ($etu as $etu) {
+            $query->execute($etu);
+        }
+    }
+
+    public function ETU_sans_conseiller($programme){
+        if ($programme == "all" ) {
+            $sql = "SELECT * FROM ETU WHERE id_ETU NOT IN (SELECT id_ETU FROM LIEN)";
+            $query = $this->db->prepare($sql);
+            $query->execute();
+            return $query->fetchAll();
+        }else{
+            $sql = "SELECT * FROM ETU WHERE id_ETU NOT IN (SELECT id_ETU FROM LIEN) AND programme = '".$programme."'";
+            $query = $this->db->prepare($sql);
+            $query->execute();
+            return $query->fetchAll();
+        }
+    }
 }

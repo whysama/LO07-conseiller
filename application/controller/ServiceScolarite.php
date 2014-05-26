@@ -9,6 +9,8 @@ class ServiceScolarite extends Controller
     }
 
     public function index(){
+        var_dump($_POST);
+        $etu = (isset($_POST['programme_select'])) ? $this->servicescolarite_model->ETU_sans_conseiller($_POST['programme_select']) : $this->servicescolarite_model->ETU_sans_conseiller("all") ;
         require "application/views/ServiceScolarite/index.php";
     }
 
@@ -24,5 +26,17 @@ class ServiceScolarite extends Controller
         header('location: '.URL.'ServiceScolarite/');
     }
 
+    public function ETU_ajout_liste(){
+        if (isset($_POST['submit_etu_ajout_liste'])) {
+            $this->servicescolarite_model->ETU_ajout_liste($_FILES["csv"]["tmp_name"]);
+        }
+        header('location: '.URL.'ServiceScolarite/');
+    }
 
+    public function ETU_sans_conseiller(){
+        if (isset($_POST['programme'])) {
+            $etu = $this->servicescolarite_model->ETU_sans_conseiller($_POST['programme']);
+            return $etu;
+        }
+    }
 }

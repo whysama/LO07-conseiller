@@ -69,8 +69,6 @@ class DirecteurRHModel{
     public function EC_ajout_liste($filename){
         require 'public/tools/tools.php';
         $ec = getCSV($filename);
-        //echo "<pre>";
-        //var_dump($ec);
         $sql = "INSERT INTO EC VALUES(?,?,?,?,?,?)";
         $query = $this->db->prepare($sql);
         foreach ($ec as $value) {
