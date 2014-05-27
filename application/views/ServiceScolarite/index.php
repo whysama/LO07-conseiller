@@ -1,6 +1,8 @@
 <meta charset="UTF-8">
 <a href="<?php echo URL."ServiceScolarite/ETU_vide" ?>">Vider la table d'étudiants</a>
 
+<a href="<?php echo URL."ServiceScolarite/attribution_nouveaux_etudiants"?>">GO</a>
+
 <form action="<?php echo URL."ServiceScolarite/ETU_ajout" ?>" method = "POST">
     <label>Nom:</label>
     <input type="text" name="nom" value="" required/>
@@ -19,8 +21,7 @@
    </form>
 
     <form action="<?php echo URL."ServiceScolarite/" ?>" method = "POST">
-        <select name="programme_select" onchange="submit();">
-            <option value="all" >Programme</option>
+        <select name="programme_select">
             <option value="all">All</option>
             <option value="ISI">ISI</option>
             <option value="SM">SM</option>
@@ -32,6 +33,11 @@
             <option value="PMOM">PMOM</option>
             <option value="HC">HC</option>
         </select>
+        <select name="views" >
+            <option value="all">Tous étudiants</option>
+            <option value="sans">Etudians sans conseiller</option>
+        </select>
+        <input type="submit" name="submit_select" value="OK" />
     </form>
    <table>
     <thead style="background-color:#ddd; font-weight: bold;">
@@ -42,6 +48,8 @@
         <td>Email</td>
         <td>Programme</td>
         <td>Semestre</td>
+        <td>Delete</td>
+        <?php if($flag){ echo "<td>Attribution</td>";} ?>
       </tr>
     </thead>
     <tbody>
@@ -53,6 +61,10 @@
         <td><?php if(isset($etu->email)) echo $etu->email;  ?></td>
         <td><?php if(isset($etu->programme)) echo $etu->programme;  ?></td>
         <td><?php if(isset($etu->semestre)) echo $etu->semestre;  ?></td>
+        <td><a href="<?php echo URL."ServiceScolarite/ETU_suppression/".$etu->id_ETU; ?>">x</a></td>
+        <?php if ($flag): ?>
+                <td><a href="<?php echo URL."ServiceScolarite/attribution_nouvel_etudiant/".$etu->id_ETU ?>">go</a></td>
+        <?php endif ?>
       </tr>
     <?php } ?>
     </tbody>

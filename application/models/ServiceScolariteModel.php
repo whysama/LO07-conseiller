@@ -68,4 +68,204 @@ class ServiceScolariteModel {
             return $query->fetchAll();
         }
     }
+
+    public function ETU_visualisation($programme){
+        if ($programme == "all" ) {
+            $sql = "SELECT * FROM ETU";
+            $query = $this->db->prepare($sql);
+            $query->execute();
+            return $query->fetchAll();
+        }else{
+            $sql = "SELECT * FROM ETU WHERE  programme = '".$programme."'";
+            $query = $this->db->prepare($sql);
+            $query->execute();
+            return $query->fetchAll();
+        }
+    }
+
+    public function ETU_suppression($id_ETU){
+        $sql_drop_FK_l2 = "ALTER TABLE LIEN DROP FOREIGN KEY fk_id_ETU_l"; //删除LIEN的ETU外键
+        $sql_add_FK_l2 = "ALTER TABLE LIEN ADD CONSTRAINT fk_id_ETU_l FOREIGN KEY (id_ETU) REFERENCES ETU(id_ETU)"; //重新建立外键
+        $sql_delete_from_lien = "DELETE FROM LIEN WHERE id_ETU =".$id_ETU;
+        $sql_delete_from_etu = "DELETE FROM ETU WHERE id_ETU=".$id_ETU;
+        try {
+            $this->db->beginTransaction();
+            $this->db->exec($sql_drop_FK_l2);
+            $this->db->exec($sql_delete_from_lien);
+            $this->db->exec($sql_delete_from_etu);
+            $this->db->exec($sql_add_FK_l2);
+            $this->db->commit();
+        } catch (PDOException $e) {
+            $this->db->rollBack();
+            echo "WRONG:".$e->getMessage();
+        }
+    }
+
+    private function Lien_etudiants_decroissant($programme){
+        $sql = "SELECT id_EC,COUNT(id_ETU) as num_id_etu FROM LIEN WHERE id_EC in(SELECT id_EC from CONSEILLER where LIEN.id_EC = CONSEILLER.id_EC and programme = '".$programme."') group by id_EC ORDER BY `num_id_etu`,id_EC ASC";
+        $query = $this->db->prepare($sql);
+        $query->execute();
+        return $query->fetchAll();
+    }
+
+    public function attribution_nouvel_etudiant($id_ETU){
+        $sql_programme = "SELECT programme FROM ETU WHERE id_ETU=".$id_ETU;
+        $query = $this->db->prepare($sql_programme);
+        $query->execute();
+        $programme = $query->fetchAll()[0]->programme;
+
+        if (!empty($this->Lien_etudiants_decroissant($programme))) {
+            $id_EC  = $this->Lien_etudiants_decroissant($programme)[0]->programme;
+            $sql = "INSERT INTO LIEN VALUES('".$id_EC."','".$id_ETU."')";
+            $query = $this->db->prepare($sql);
+            $query->execute();
+            return true;
+        }else{
+            $sql = "SELECT id_EC FROM CONSEILLER WHERE programme = ?";
+            $query = $this->db->prepare($sql);
+            $query->execute(array($programme));
+            $id_EC = $query->fetchAll()[0]->id_EC;
+            $sql = "INSERT INTO LIEN VALUES('".$id_EC."','".$id_ETU."')";
+            $query = $this->db->prepare($sql);
+            $query->execute();
+            return true;
+        }
+    }
+
+    private function sqlFetch($sql){
+        $query = $this->db->prepare($sql);
+        $query->execute();
+        return $query->fetchAll();
+    }
+
+    public function attribution_nouveaux_etudiants(){
+            $sql_count_etu = "SELECT programme,COUNT(id_ETU) as COUNT_ETU FROM ETU where id_ETU not in(select id_ETU from lien)  group by programme";
+            $sql_count_con = "SELECT programme,COUNT(id_EC) as COUNT_CON FROM CONSEILLER GROUP BY programme";
+            $count_etu = $this->sqlFetch($sql_count_etu);  //每个专业未被分配的学生有多少人
+            $count_con = $this->sqlFetch($sql_count_con); //每个专业Con有多少人
+         //   var_dump($count_etu);
+            //var_dump($count_con);
+            foreach ($count_con as $count_con) {    //每一个有conseiller的专业
+                $programme = $count_con->programme;
+                $c_con[$count_con->programme] = $count_con->COUNT_CON; //优化后的 统计各专业Con人数的数组
+                $sql_con = "SELECT id_EC FROM CONSEILLER WHERE programme = '".$programme."'";
+                $sql_etu = "SELECT id_ETU FROM ETU WHERE id_ETU not in(select id_ETU from lien) AND programme = '".$programme."'";
+                $con[$programme] = $this->sqlFetch($sql_con);//$con[ISI] = array(0=>objet1,1=>objet2...) 某专业 全部CON
+                $etu[$programme] = $this->sqlFetch($sql_etu);//未被分配的 某专业 全部ETU
+                foreach ($count_etu as $count_etu_temp) {
+                    if ($count_etu_temp->programme == $programme) {
+                        $avr[$count_etu_temp->programme] = ceil($count_etu_temp->COUNT_ETU/$count_con->COUNT_CON);
+                        $c_etu[$count_etu_temp->programme] = $count_etu_temp->COUNT_ETU;
+                    }
+                }
+            }
+            if (!isset($avr)) {
+                return false;
+            }
+            //-----------------------------
+            //开始分配
+            foreach ($avr as $programme => $avr) {
+                //$JiShu = 0; //计数器
+                //非TC的 其他专业
+                if ($programme != "TC") {
+                    for ($i=0; $i < $avr; $i++) {       //共执行次数
+                        for ($k=0; $k < $c_con[$programme] ; $k++) {  //对每一位Conseiller来说
+                            $temp = array_shift($etu[$programme]); //弹出第一个学生
+                            if ($temp != NULL) {
+                                $id_ETU = $temp->id_ETU;
+                                if ($id_ETU != NULL) {
+                                    $id_EC = $con[$programme][$k]->id_EC;
+                                    $sql = "INSERT INTO LIEN VALUES('".$id_EC."','".$id_ETU."')";
+                                    //echo $sql."<br>";
+                                    $query = $this->db->prepare($sql);
+                                    $query->execute();
+                                }
+                            }
+                        }
+                    }
+                }else{
+                    //TC专业分配
+                    //三步
+                    /*  第一步 1.找出LIEN中CON所带领学生个数的最小值
+                                2.给CONSEILLER中其他被授权TC的CON按最小值分配学生加入LIEN
+                        第二步 1.若还有剩余，按LIEN中CON所带领学生个数的最大值，填满所有CON
+                        第三步 1.若还有剩余，计算剩余学生人数和每位CON需要轮到的次数
+                                2.分配学生
+                    */
+                    $affiche_count = $this->Lien_etudiants_decroissant($programme); //LIEN里授权TC的Con按学生数目的降序排列
+                    //var_dump($affiche_count);
+                    $min_conseiller = $affiche_count[0]->num_id_etu;//CON所带领最小的学生个数
+                    $sql_con_tc = "SELECT id_EC FROM CONSEILLER WHERE id_EC NOT IN( SELECT id_EC FROM LIEN ) AND programme = '".$programme."'";
+                    $con_tc = $this->sqlFetch($sql_con_tc);
+                   // var_dump($con_tc);
+                    $sql_count_con_tc = "SELECT COUNT(id_EC) as COUNT_EC FROM CONSEILLER where id_EC not in(select id_EC from lien) AND programme = '".$programme."'";
+                    $count_con_tc = $this->sqlFetch($sql_count_con_tc)[0];
+                    //var_dump($count_con_tc);
+                    //---
+                    //pr($con_tc);
+                    //pr($count_con_tc);
+                    //
+                    //第一步
+                    for ($i=0; $i < $min_conseiller; $i++) {
+                        for ($k=0; $k < $count_con_tc->COUNT_EC; $k++) {
+                            $temp = array_shift($etu[$programme]);
+                            if ($temp != NULL) {
+                                $id_ETU = $temp->id_ETU;
+                                if ($id_ETU != NULL) {
+                                    $id_EC = $con_tc[$k]->id_EC;
+                                    $sql = "INSERT INTO LIEN VALUES('".$id_EC."','".$id_ETU."')";
+                                    $query = $this->db->prepare($sql);
+                                    $query->execute();
+                                }
+                            }
+                        }
+                    }
+
+                    //第二步
+                    if (current($etu[$programme])) {
+                        $affiche_count = $this->Lien_etudiants_decroissant($programme);
+                        $max_conseiller = end($affiche_count)->num_id_etu;
+                        reset($affiche_count);
+                        while(($num_id = current($affiche_count)->num_id_etu) < $max_conseiller) { //填补空缺
+                            for ($i=$num_id; $i < $max_conseiller; $i++) {
+                                $temp = array_shift($etu[$programme]);
+                                if ($temp!=NULL) {
+                                    $id_ETU = $temp->id_ETU;
+                                    if ($id_ETU != NULL) {
+                                        $id_EC = current($affiche_count)->id_EC;
+                                        $sql = "INSERT INTO LIEN VALUES('".$id_EC."','".$id_ETU."')";
+                                        $query = $this->db->prepare($sql);
+                                        $query->execute();
+                                    }
+                                }
+                            }
+                            next($affiche_count);
+                        }
+                        //$affiche_count = $this->Lien_etudiants_decroissant($programme);
+                        //
+                        //pr($affiche_count);
+                        //
+                        //第三步
+                        if (current($etu[$programme])) {
+                            $tc_rest = count($etu[$programme]); //剩余学生
+                            $avr_tc = ceil($tc_rest/$c_con[$programme]);
+                            for ($i=0; $i < $avr_tc; $i++) {        //共执行次数
+                                for ($k=0; $k < $c_con[$programme] ; $k++) {  //对每一位Conseiller来说
+                                    $temp = array_shift($etu[$programme]); //弹出第一个学生
+                                    if ($temp!=NULL) {
+                                        $id_ETU = $temp->id_ETU;
+                                        if ($id_ETU != NULL) {
+                                            $id_EC = $con_tc[$k]->id_EC;
+                                            $sql = "INSERT INTO LIEN VALUES('".$id_EC."','".$id_ETU."')";
+                                            $query = $this->db->prepare($sql);
+                                            $query->execute();
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
 }
