@@ -29,6 +29,7 @@
         <td>Email</td>
         <td>Bureau</td>
         <td>Pole</td>
+        <td>Modifier</td>
       </tr>
     </thead>
     <tbody>
@@ -40,6 +41,49 @@
         <td><?php if(isset($ec->email)) echo $ec->email;  ?></td>
         <td><?php if(isset($ec->bureau)) echo $ec->bureau;  ?></td>
         <td><?php if(isset($ec->pole)) echo $ec->pole;  ?></td>
+        <td><a href="<?php echo URL.'DirecteurRH/EC_suppression/'.$ec->id_EC;?>">x</a></td>
+      </tr>
+    <?php } ?>
+    </tbody>
+  </table>
+
+  <!--表格2-->
+  <table>
+    <thead style="background-color:#ddd; font-weight: bold;">
+      <tr>
+        <td>ID</td>
+        <td>Nom</td>
+        <td>Prenom</td>
+        <td>Num</td>
+      </tr>
+    </thead>
+    <tbody>
+    <?php foreach ($ec_e as $ec_e) { ?>
+      <tr>
+        <td><?php if(isset($ec_e->id_EC)) echo $ec_e->id_EC;  ?></td>
+        <td><?php if(isset($ec_e->nom)) echo $ec_e->nom;  ?></td>
+        <td><?php if(isset($ec_e->prenom)) echo $ec_e->prenom;  ?></td>
+        <td><?php if(isset($ec_e->num)) echo $ec_e->num;  ?></td>
+      </tr>
+    <?php } ?>
+    </tbody>
+  </table>
+
+  <!--表格3-->
+  <table>
+    <thead style="background-color:#ddd; font-weight: bold;">
+      <tr>
+        <td>ID</td>
+        <td>Conseiller</td>
+        <td>Etudiant</td>
+      </tr>
+    </thead>
+    <tbody>
+    <?php foreach ($ec_e2 as $ec_e2) { ?>
+      <tr>
+        <td><?php if(isset($ec_e2->id_EC)) echo $ec_e2->id_EC;  ?></td>
+        <td><?php if(isset($ec_e2->EC_NOM)&&isset($ec_e2->EC_PRENOM)) echo $ec_e2->EC_PRENOM." ".$ec_e2->EC_NOM;  ?></td>
+        <td><?php if(isset($ec_e2->ETU_PRENOM)&&isset($ec_e2->ETU_NOM)) echo $ec_e2->ETU_PRENOM." ".$ec_e2->ETU_NOM;  ?></td>
       </tr>
     <?php } ?>
     </tbody>

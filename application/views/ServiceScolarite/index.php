@@ -1,4 +1,3 @@
-<meta charset="UTF-8">
 <a href="<?php echo URL."ServiceScolarite/ETU_vide" ?>">Vider la table d'étudiants</a>
 
 <a href="<?php echo URL."ServiceScolarite/attribution_nouveaux_etudiants"?>">GO</a>
@@ -20,6 +19,14 @@
         <input type="submit" name="submit_etu_ajout_liste" value="OK"/>
    </form>
 
+    <form action="<?php echo URL."ServiceScolarite/attribution_etudiant_transfert/" ?>" method = "POST">
+        <label>Id de TC:</label>
+        <input type="text" name="id_ETU">
+        <label>Programme:</label>
+        <input type="text" name="programme">
+        <input type="submit" name="submit_transfert" value="OK">
+    </form>
+
     <form action="<?php echo URL."ServiceScolarite/" ?>" method = "POST">
         <select name="programme_select">
             <option value="all">All</option>
@@ -39,6 +46,7 @@
         </select>
         <input type="submit" name="submit_select" value="OK" />
     </form>
+
    <table>
     <thead style="background-color:#ddd; font-weight: bold;">
       <tr>
@@ -65,6 +73,44 @@
         <?php if ($flag): ?>
                 <td><a href="<?php echo URL."ServiceScolarite/attribution_nouvel_etudiant/".$etu->id_ETU ?>">go</a></td>
         <?php endif ?>
+      </tr>
+    <?php } ?>
+    </tbody>
+  </table>
+
+
+
+
+
+
+      <form action="<?php echo URL."ServiceScolarite/" ?>" method = "POST">
+        <select name="programme_select2">
+            <option value="all">All</option>
+            <option value="ISI">ISI</option>
+            <option value="SM">SM</option>
+            <option value="MTE">MTE</option>
+            <option value="SRT">SRT</option>
+            <option value="SI">SI</option>
+            <option value="TC">TC</option>
+            <option value="CV ING">CV ING</option>
+            <option value="PMOM">PMOM</option>
+            <option value="HC">HC</option>
+        </select>
+        <input type="submit" name="submit_select2" value="OK" />
+    </form>
+
+    <table>
+    <thead style="background-color:#ddd; font-weight: bold;">
+      <tr>
+        <td>Etudiant</td>
+        <td>Eseignant</td>
+      </tr>
+    </thead>
+    <tbody>
+    <?php foreach ($etu2 as $etu) { ?>
+      <tr>
+    <td><?php if(isset($etu->EC_NOM)&&isset($etu->EC_PRENOM)) echo $etu->EC_PRENOM." ".$etu->EC_NOM;  ?></td>
+        <td><?php if(isset($etu->ETU_PRENOM)&&isset($etu->ETU_NOM)) echo $etu->ETU_PRENOM." ".$etu->ETU_NOM;  ?></td>
       </tr>
     <?php } ?>
     </tbody>

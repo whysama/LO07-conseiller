@@ -10,17 +10,30 @@ class ServiceScolarite extends Controller
 
     public function index(){
         //改变表格显示，选择要哪种表格
+        echo ("<meta charset=\"UTF-8\">");
+        //表格一
         if (isset($_POST['submit_select'])) {
             if ($_POST['views'] == "all") {
                 $flag = false;
-               $etu = $this->servicescolarite_model->ETU_visualisation($_POST["programme_select"]);
+                $etu = $this->servicescolarite_model->ETU_visualisation($_POST["programme_select"]);
             }else{
                 $flag = true;
                 $etu = $this->servicescolarite_model->ETU_sans_conseiller($_POST["programme_select"]);
+                if ($_POST['programme_select']=="TC") {
+                    $tc = true;
+                }else{
+                    $tc = false;
+                }
             }
         }else{
             $flag = false;
             $etu = $this->servicescolarite_model->ETU_visualisation("all");
+        }
+        //表格二
+        if (isset($_POST['submit_select2'])) {
+                $etu2 = $this->servicescolarite_model->ETU_avec_conseillet_list($_POST["programme_select2"]);
+        }else{
+                $etu2 = $this->servicescolarite_model->ETU_avec_conseillet_list("all");
         }
 
         require "application/views/ServiceScolarite/index.php";
@@ -68,6 +81,13 @@ class ServiceScolarite extends Controller
 
     public function attribution_nouveaux_etudiants(){
         $this->servicescolarite_model->attribution_nouveaux_etudiants();
+        header('location: '.URL.'ServiceScolarite/');
+    }
+
+    public function attribution_etudiant_transfert(){
+        if (isset($_POST["submit_transfert"])) {
+            $this->servicescolarite_model->attribution_etudiant_transfert($_POST['id_ETU'],$_POST['programme']);
+        }
         header('location: '.URL.'ServiceScolarite/');
     }
 }

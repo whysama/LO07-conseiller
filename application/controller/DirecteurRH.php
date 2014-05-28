@@ -2,37 +2,60 @@
 
 class DirecteurRH extends Controller
 {
+    private $directeur_model;
+
+    public function __construct(){
+        session_start();
+        parent::__construct();
+        $this->directeur_model = $this->loadModel("DirecteurRHModel");
+    }
+
     public function index(){
         $ec = $this->EC_visualisation();
+        $ec_e = $this->EC_visualisation_nombre_etudiants_decroissant();
+        $ec_e2 = $this->EC_visualisation_avec_etudiant();
         require "application/views/DirecteurRH/index.php";
     }
 
     public function EC_vide(){
-        $directeur_model = $this->loadModel("DirecteurRHModel");
-        $directeur_model->EC_vide();
+        $this->directeur_model->EC_vide();
         header('location: '.URL.'DirecteurRH/');
     }
 
     public function EC_ajout(){
         echo "Ajout EC";
         if(isset($_POST["submit_ec_ajout"])){
-            $directeur_model = $this->loadModel("DirecteurRHModel");
-            $directeur_model->EC_ajout($_POST["nom"],$_POST["prenom"],$_POST["bureau"],$_POST["pole"]);
+            $this->directeur_model->EC_ajout($_POST["nom"],$_POST["prenom"],$_POST["bureau"],$_POST["pole"]);
         }
         header('location: '.URL.'DirecteurRH/');
     }
 
     public function EC_ajout_liste(){
         if (isset($_FILES['csv'])) {
-            $directeur_model = $this->loadModel("DirecteurRHModel");
-            $directeur_model->EC_ajout_liste($_FILES["csv"]["tmp_name"]);
+            $this->directeur_model->EC_ajout_liste($_FILES["csv"]["tmp_name"]);
         }
         header('location: '.URL.'DirecteurRH/');
     }
 
     public function EC_visualisation(){
-        $directeur_model = $this->loadModel("DirecteurRHModel");
-        $ec = $directeur_model->EC_visualisation();
+        $ec = $this->directeur_model->EC_visualisation();
+        return $ec;
+    }
+
+    public function EC_suppression($id_EC){
+        if (isset($id_EC)) {
+            $this->directeur_model->EC_suppression($id_EC);
+        }
+        header('location: '.URL.'DirecteurRH/');
+    }
+
+    public function EC_visualisation_nombre_etudiants_decroissant(){
+        $ec = $this->directeur_model->EC_visualisation_nombre_etudiants_decroissant();
+        return $ec;
+    }
+
+    public function EC_visualisation_avec_etudiant(){
+        $ec = $this->directeur_model->EC_visualisation_avec_etudiant();
         return $ec;
     }
 

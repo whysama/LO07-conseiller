@@ -82,4 +82,45 @@ class DirecteurRHModel{
         $query->execute();
         return $query->fetchAll();
     }
+
+    public function EC_suppression($id){
+        $sql_drop_FK_c1 = "ALTER TABLE CONSEILLER DROP FOREIGN KEY fk_id_EC_c";
+        $sql_drop_FK_l1 = "ALTER TABLE LIEN DROP FOREIGN KEY fk_id_EC_l";
+        $sql_add_FK_c1 = "ALTER TABLE CONSEILLER ADD CONSTRAINT fk_id_EC_c FOREIGN KEY (id_EC) REFERENCES EC(id_EC)";
+        $sql_add_FK_l1 = "ALTER TABLE LIEN ADD CONSTRAINT fk_id_EC_l FOREIGN KEY (id_EC) REFERENCES CONSEILLER(id_EC)";
+        $sql_delete_from_lien = "DELETE FROM LIEN WHERE id_EC =".$id;
+        $sql_delete_from_con = "DELETE FROM CONSEILLER WHERE id_EC =".$id;
+        $sql_delete_from_EC = "DELETE FROM EC WHERE id_EC=".$id;
+        try {
+            $this->db->beginTransaction();
+            $this->db->exec($sql_drop_FK_l1);
+            $this->db->exec($sql_drop_FK_c1);
+            $this->db->exec($sql_delete_from_lien);
+            $this->db->exec($sql_delete_from_con);
+            $this->db->exec($sql_delete_from_EC);
+            $this->db->exec($sql_add_FK_l1);
+            $this->db->exec($sql_add_FK_c1);
+            $this->db->commit();
+        } catch (PDOException $e) {
+            $this->db->rollBack();
+            echo ("Erreur!".$e->getMessage());
+        }
+    }
+
+    public function EC_visualisation_nombre_etudiants_decroissant(){
+            $sql_LIEN = "SELECT EC.id_EC,prenom,nom,count(LIEN.id_ETU) as num FROM EC LEFT JOIN LIEN ON EC.id_EC = LIEN.id_EC GROUP BY LIEN.id_EC ORDER BY `num` DESC";
+            $query = $this->db->prepare($sql_LIEN);
+            $query->execute();
+            return $query->fetchAll();
+    }
+
+    public function EC_visualisation_avec_etudiant(){
+            $sql = "SELECT EC.id_EC,ec.nom AS EC_NOM, ec.prenom AS EC_PRENOM, etu.nom AS ETU_NOM,etu.prenom AS ETU_PRENOM
+                    FROM EC,ETU,LIEN
+                    WHERE EC.id_EC = LIEN.id_EC
+                    AND ETU.id_ETU = LIEN.id_ETU";
+            $query = $this->db->prepare($sql);
+            $query->execute();
+            return $query->fetchAll();
+    }
 }

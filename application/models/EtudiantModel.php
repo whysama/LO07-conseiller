@@ -21,4 +21,11 @@ class EtudiantModel {
         return $query->fetchAll();
     }
 
+    public function getConseiller($id_ETU){
+        $sql = "SELECT * FROM EC WHERE id_EC IN(SELECT id_EC FROM LIEN WHERE id_ETU = ? )";
+        $query = $this->db->prepare($sql);
+        $query->execute(array($id_ETU));
+        return $query->fetchAll();
+    }
+
 }

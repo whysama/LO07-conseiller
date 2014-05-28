@@ -83,6 +83,27 @@ class ServiceScolariteModel {
         }
     }
 
+    public function ETU_avec_conseillet_list ($programme){
+            if ($programme == "all") {
+                $sql = "SELECT ETU.nom AS ETU_NOM, ETU.prenom AS ETU_PRENOM, EC.nom AS EC_NOM, EC.prenom AS EC_PRENOM
+                        FROM ETU,LIEN,EC
+                        WHERE LIEN.id_ETU = ETU.id_ETU
+                        AND LIEN.id_EC=EC.id_EC";
+                $query = $this->db->prepare($sql);
+                $query->execute();
+                return $query->fetchAll();
+            }else{
+                $sql = "SELECT ETU.nom AS ETU_NOM, ETU.prenom AS ETU_PRENOM, EC.nom AS EC_NOM, EC.prenom AS EC_PRENOM
+                        FROM ETU,LIEN,EC
+                        WHERE LIEN.id_ETU = ETU.id_ETU
+                        AND LIEN.id_EC=EC.id_EC
+                        AND programme='".$programme."'";
+                $query = $this->db->prepare($sql);
+                $query->execute();
+                return $query->fetchAll();
+            }
+        }
+
     public function ETU_suppression($id_ETU){
         $sql_drop_FK_l2 = "ALTER TABLE LIEN DROP FOREIGN KEY fk_id_ETU_l"; //删除LIEN的ETU外键
         $sql_add_FK_l2 = "ALTER TABLE LIEN ADD CONSTRAINT fk_id_ETU_l FOREIGN KEY (id_ETU) REFERENCES ETU(id_ETU)"; //重新建立外键
@@ -109,25 +130,40 @@ class ServiceScolariteModel {
     }
 
     public function attribution_nouvel_etudiant($id_ETU){
+        if (!$this->conseillerVerification($id_ETU)) {
+            return false;
+        }
         $sql_programme = "SELECT programme FROM ETU WHERE id_ETU=".$id_ETU;
         $query = $this->db->prepare($sql_programme);
         $query->execute();
         $programme = $query->fetchAll()[0]->programme;
 
-        if (!empty($this->Lien_etudiants_decroissant($programme))) {
-            $id_EC  = $this->Lien_etudiants_decroissant($programme)[0]->programme;
-            $sql = "INSERT INTO LIEN VALUES('".$id_EC."','".$id_ETU."')";
-            $query = $this->db->prepare($sql);
-            $query->execute();
-            return true;
+        $sql = "SELECT DISTINCT id_EC, (SELECT count(id_ETU) FROM LIEN WHERE LIEN.id_EC = CONSEILLER.id_EC group by id_EC)AS num_etu FROM CONSEILLER WHERE programme = ? order by num_etu";
+        $query = $this->db->prepare($sql);
+        $query->execute(array($programme));
+        $id_EC = $query->fetchAll()[0]->id_EC;
+        $sql = "INSERT INTO LIEN VALUES('".$id_EC."','".$id_ETU."')";
+        $query = $this->db->prepare($sql);
+        $query->execute();
+        return true;
+    }
+    /**
+     * 确保存在某programmde的conseiller，已经被授权
+     * @param  String $id_ETU [description]
+     * @return Bool         [description]
+     */
+    public function conseillerVerification($id_ETU){
+        $sql = "SELECT programme FROM ETU WHERE id_ETU = ? ";
+        $query = $this->db->prepare($sql);
+        $query->execute(array($id_ETU));
+        $programme = $query->fetchAll()[0]->programme;
+
+        $sql = "SELECT programme FROM CONSEILLER WHERE programme = ?";
+        $query = $this->db->prepare($sql);
+        $query->execute(array($programme));
+        if (empty($query->fetchAll())) {
+            return false;
         }else{
-            $sql = "SELECT id_EC FROM CONSEILLER WHERE programme = ?";
-            $query = $this->db->prepare($sql);
-            $query->execute(array($programme));
-            $id_EC = $query->fetchAll()[0]->id_EC;
-            $sql = "INSERT INTO LIEN VALUES('".$id_EC."','".$id_ETU."')";
-            $query = $this->db->prepare($sql);
-            $query->execute();
             return true;
         }
     }
@@ -265,6 +301,25 @@ class ServiceScolariteModel {
                             }
                         }
                     }
+                }
+            }
+        }
+
+    public function attribution_etudiant_transfert($id_ETU,$programme){
+            $sql_update_p_s = "UPDATE ETU SET programme = '".$programme."', semestre = 1 WHERE id_ETU = ".$id_ETU;
+            $sql_select_p = "SELECT CONSEILLER.programme FROM CONSEILLER,LIEN WHERE CONSEILLER.id_EC = LIEN.id_EC AND id_ETU = ".$id_ETU;
+            $pro = $this->sqlFetch($sql_select_p);
+            foreach ($pro as $conseiller) {
+                if ( $conseiller->programme == $programme) {  //判断ETU的CON是否已被授权PROGRAMME
+                    $query = $this->db->prepare($sql_update_p_s);
+                    $query->execute();
+                }else{  //未被授权 对ETU修改学生 对LIEN先删再添
+                    $query = $this->db->prepare($sql_update_p_s);
+                    $query->execute();
+                    $sql_delete_from_lien = "DELETE FROM LIEN WHERE id_ETU=".$id_ETU;
+                    $query = $this->db->prepare($sql_delete_from_lien);
+                    $query->execute();
+                    $this->attribution_nouvel_etudiant($id_ETU);
                 }
             }
         }

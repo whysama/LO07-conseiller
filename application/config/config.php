@@ -1,7 +1,7 @@
 <?php
             //定义参数
             //URL
-            define('URL', 'http://localhost/~young/Conseiller/');
+            define('URL', 'http://localhost/~young/Conseiller/index.php?url=');
             //DB
             define('DB_USER', "root");
             define('DB_PASSWORD',"root");
