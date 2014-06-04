@@ -14,14 +14,15 @@ class Responsable extends Controller
     }
 
     public function index(){
-        $c = $this->responsable_model->CONSEILLER_visualisation();
-        $h = $this->responsable_model->Habilitation_visualisation_etu_ec();
+        $c = $this->CONSEILLER_visualisation();
+        $h = $this->Habilitation_visualisation_etu_ec();
+        $ec = $this->EC_visualisation();
         require "application/views/Responsable/index.php";
     }
 
-    public function Habilitation_ajout(){
-        if (isset($_POST["submit_Habilitation_ajout"])) {
-            $this->responsable_model->Habilitation_ajout($_POST["id_EC"]);
+    public function Habilitation_ajout($id_EC){
+        if (isset($id_EC)) {
+            $this->responsable_model->Habilitation_ajout($id_EC);
         }
       header('location: '.URL.'Responsable/');
     }
@@ -46,8 +47,16 @@ class Responsable extends Controller
     }
 
     public function Habilitation_visualisation_etu_ec(){
-        $c = $this->responsable_model->CONSEILLER_visualisation();
+        $c = $this->responsable_model->Habilitation_visualisation_etu_ec();
         return $c;
+    }
+
+    public function EC_visualisation(){
+        if (isset($_POST['EC_pole'])) {
+            return $this->responsable_model->EC_visualisation($_POST['EC_pole']);
+        }else{
+            return $this->responsable_model->EC_visualisation("ALL");
+        }
     }
 
 }

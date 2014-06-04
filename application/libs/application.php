@@ -68,13 +68,13 @@ class Application
             $this->url_parameter_3 = (isset($url[4]) ? $url[4] : null);
 
             // splitURL 测试
-            //echo"----------Application Pamametrage------------"."<br/>";
-            //echo 'Controller: ' . $this->url_controller . '<br />';
-            //echo 'Action: ' . $this->url_action . '<br />';
-            //echo 'Parameter 1: ' . $this->url_parameter_1 . '<br />';
-            //echo 'Parameter 2: ' . $this->url_parameter_2 . '<br />';
-            //echo 'Parameter 3: ' . $this->url_parameter_3 . '<br />';
-            //echo"----------Fin------------"."<br/>"."<br/>"."<br/>";
+            #echo"----------Application Pamametrage------------"."<br/>";
+            #echo 'Controller: ' . $this->url_controller . '<br />';
+            #echo 'Action: ' . $this->url_action . '<br />';
+            #echo 'Parameter 1: ' . $this->url_parameter_1 . '<br />';
+            #echo 'Parameter 2: ' . $this->url_parameter_2 . '<br />';
+            #echo 'Parameter 3: ' . $this->url_parameter_3 . '<br />';
+            #echo"----------Fin------------"."<br/>"."<br/>"."<br/>";
 
         }
     }

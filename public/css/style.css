@@ -1,0 +1,45 @@
+@charset "utf-8";
+
+body{
+	background: url(public/img/bg.gif) repeat-y center;
+	color: #C7C7C7；
+}
+
+.global{
+	width: 960px;
+	margin: 0 auto;
+}
+
+/*---anchor---*/
+
+/*---img---*/
+.avatar{
+	width: 100px;
+	height: 100px;
+}
+
+/*---header---*/
+
+/*---aside---*/
+aside{
+	float: left;
+	width: 200px;
+	position: fixed;
+	text-align: center;
+	/*padding-top: 10px;*/
+}
+/*---nav---*/
+nav{
+	text-align: center;
+}
+
+/*---div---*/
+div .content{
+	float: right;
+	width: 700px;
+}
+
+#part2, #part3{
+	display:none;
+}
+

@@ -1,8 +1,11 @@
 <?php
 
 class ResponsableModel{
-
+    /**
+     * Responsable所在的programme
+     */
     private $programme;
+
 
     public function getProgramme(){
         return $this->programme;
@@ -20,6 +23,11 @@ class ResponsableModel{
         }
     }
 
+    /**
+     * 从数据库获取responsable的信息
+     * @param  [type] $email [description]
+     * @return [type]        [description]
+     */
     public function getInfo($email){
         $sql = "SELECT * FROM EC WHERE email = ?";
         $query = $this->db->prepare($sql);
@@ -27,6 +35,10 @@ class ResponsableModel{
         return $query->fetchAll();
     }
 
+    /**
+     * 授权某EC到CONSEILLER表
+     * @param [type] $id_EC [description]
+     */
     public function Habilitation_ajout($id_EC){
         try {
             $sql = "INSERT INTO CONSEILLER VALUES(?,?)";
@@ -37,6 +49,10 @@ class ResponsableModel{
         }
     }
 
+    /**
+     * tous les EC de ce pole sont habilités automatiquement pour ce programme
+     * @param [type] $pole [description]
+     */
     public function Habilitation_par_pole($pole){
         $sql = "SELECT id_EC From EC
                         WHERE id_EC NOT IN(
@@ -52,7 +68,10 @@ class ResponsableModel{
             $stmt->execute(array($conseiller->id_EC,$this->getProgramme()));
         }
     }
-
+    /**
+     * 删除一个conseiller
+     * @param [type] $id_EC [description]
+     */
     public function Habilitation_suppression($id_EC){
         $sql_drop_FK_c1 = "ALTER TABLE CONSEILLER DROP FOREIGN KEY fk_id_EC_c";
         $sql_drop_FK_l1 = "ALTER TABLE LIEN DROP FOREIGN KEY fk_id_EC_l";
@@ -74,14 +93,18 @@ class ResponsableModel{
             echo ("Erreur!".$e->getMessage());
         }
     }
-
+    /**
+     * 显示自己programme现在的conseiller
+     */
     public function CONSEILLER_visualisation(){
         $sql = "SELECT C.id_EC,nom,prenom,email,bureau,pole,C.programme FROM EC INNER JOIN CONSEILLER AS C ON C.id_EC = EC.id_EC WHERE programme = ?";
         $query = $this->db->prepare($sql);
         $query->execute(array($this->getProgramme()));
         return $query->fetchAll();
     }
-
+    /**
+     * 显示自己programme所有etu和他们的conseiller
+     */
     public function Habilitation_visualisation_etu_ec(){
         $sql = "SELECT ETU.nom AS ETU_NOM, ETU.prenom AS ETU_PRENOM, EC.nom AS EC_NOM, EC.prenom AS EC_PRENOM
                 FROM ETU,LIEN,EC
@@ -92,4 +115,22 @@ class ResponsableModel{
         $query->execute(array($this->getProgramme()));
         return $query->fetchAll();
         }
+    /**
+     * 按pole显示EC
+     * @param [type] $pole [description]
+     */
+    public function EC_visualisation($pole){
+        if ($pole == "ALL") {
+            $sql = "SELECT * FROM EC ";
+            $query = $this->db->prepare($sql);
+            $query->execute();
+            return $query->fetchAll();
+        }else{
+            $sql = "SELECT * FROM EC WHERE pole = ?";
+            $query = $this->db->prepare($sql);
+            $query->execute(array($pole));
+            return $query->fetchAll();
+        }
+    }
+
 }
