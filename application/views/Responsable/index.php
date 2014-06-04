@@ -6,17 +6,17 @@
     <script src="public/js/jquery-2.1.1.js"></script>
     <script>
         jQuery(document).ready(function() {
-            jQuery("p#function1").click(function() {
+            jQuery("a#function1").click(function() {
                 jQuery("div#part1").show();
                 jQuery("div#part2").hide();
                 jQuery("div#part3").hide();
             });
-            jQuery("p#function2").click(function() {
+            jQuery("a#function2").click(function() {
                 jQuery("div#part2").show();
                 jQuery("div#part1").hide();
                 jQuery("div#part3").hide();
             });
-            jQuery("p#function3").click(function() {
+            jQuery("a#function3").click(function() {
                 jQuery("div#part3").show();
                 jQuery("div#part1").hide();
                 jQuery("div#part2").hide();
@@ -26,7 +26,13 @@
 </head>
 <body lang="fr">
     <header class="head">
-
+        <!--新增-->
+        <span id="title">
+            <a  href="<?php echo URL."Responsable"?>">Attribution des conseillers à l'UTT</a>
+        </span>
+        <span id="logout">
+            <a href="<?php echo URL;?>Home/logout">Logout</a>
+        </span>
     </header>
     <div class = "global">
         <aside class="sidebar">
@@ -36,21 +42,24 @@
                 <p class="job">Responsable de <?php echo $_SESSION["role"]?></p>
             </div>
             <nav>
-                <p id="function1">Habilitation</p>
-                <p id="function2">Modification</p>
-                <p id="function3">Visualisation</p>
+                <a id="function1">Habilitation</a>
+                <a id="function2">Modification</a>
+                <a id="function3">Visualisation<br/>Etudiants - Conseillers</a>
             </nav>
         </aside>
         <div class="content">
                     <div id="part1">
                             <!--添加Conseiller-->
-                            <form action="<?php echo URL;?>Responsable/Habilitation_ajout" method = "POST">
+                            <legend><p>Habilitation d’un EC:</p></legend>
+                            <form id = "form1" action="<?php echo URL;?>Responsable/Habilitation_ajout" method = "POST">
                                 <label>id_EC</label>
                                 <input type="text" name="id_EC" value="" required/>
                                 <input type="submit" name="submit_Habilitation_ajout" value="OK"/>
                             </form>
                             <!--添加Conseiller par pole-->
-                            <form action="<?php echo URL;?>Responsable/Habilitation_par_pole" method = "POST">
+                            <legend><p>Habilitation des EC par pôle:</p></legend>
+                            <form id="form2" action="<?php echo URL;?>Responsable/Habilitation_par_pole" method = "POST">
+                                <label>Pole</label>
                                 <select name="pole">
                                     <option value="P2MN">P2MN</option>
                                     <option value="ROSAS">ROSAS</option>
@@ -60,6 +69,7 @@
                                 <input type="submit" name="submit_Habilitation_par_pole" value="OK">
                             </form>
                               <!--表格EC-->
+                              <legend><p>Tableau de EC:</p></legend>
                             <form action="<?php echo URL;?>Responsable/" method = "POST">
                                 <input type="submit" name ="EC_pole" value="ALL"/>
                                 <input type="submit" name ="EC_pole" value="P2MN"/>
@@ -88,7 +98,7 @@
                                 <td><?php if(isset($ec->email)) echo $ec->email;  ?></td>
                                 <td><?php if(isset($ec->bureau)) echo $ec->bureau;  ?></td>
                                 <td><?php if(isset($ec->pole)) echo $ec->pole;  ?></td>
-                                <td><a href="<?php echo URL.'Responsable/Habilitation_ajout/'.$ec->id_EC;?>">ok</a></td>
+                                <td><a href="<?php echo URL.'Responsable/Habilitation_ajout/'.$ec->id_EC;?>">✓</a></td>
                               </tr>
                             <?php } ?>
                             </tbody>
@@ -96,6 +106,7 @@
                     </div>
                     <div id="part2">
                             <!--表格1-->
+                            <legend><p>Tableau de conseillers:</p></legend>
                             <table>
                             <thead>
                               <tr>
@@ -126,6 +137,7 @@
                             </table>
                     </div>
                 <div id="part3">
+                    <legend><p>Visualisation de l’ensemble des étudiants de votre programme avec leur EC conseiller:</p></legend>
                     <table>
                       <thead>
                         <tr>

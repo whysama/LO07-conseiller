@@ -77,7 +77,7 @@ class DirecteurRHModel{
     }
 
     public function EC_visualisation(){
-        $sql = "SELECT * FROM EC ";
+        $sql = "SELECT * FROM EC  WHERE id_EC IN (SELECT id_EC FROM CONSEILLER)";
         $query = $this->db->prepare($sql);
         $query->execute();
         return $query->fetchAll();

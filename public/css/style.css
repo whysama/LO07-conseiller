@@ -1,8 +1,9 @@
 @charset "utf-8";
 
 body{
-	background: url(public/img/bg.gif) repeat-y center;
-	color: #C7C7C7；
+	background:url(../img/bg.gif) repeat-y center;
+	font-family: Helvetica, Arial, sans-serif;
+	font-size: 13px;
 }
 
 .global{
@@ -11,6 +12,17 @@ body{
 }
 
 /*---anchor---*/
+a{
+	display: block;
+}
+a, a:link{
+	color:#6db0da;
+	text-decoration:none;
+}
+a:hover, a:active{
+	color:#007A7A;
+	text-decoration:underline;
+}
 
 /*---img---*/
 .avatar{
@@ -19,27 +31,120 @@ body{
 }
 
 /*---header---*/
+header{
+	margin-bottom: 20px;
+	background: url(../img/border_bg.gif) repeat-x center;
+}
 
+#title{
+	font-size: 20px;
+	text-align: center;
+}
+
+#logout{
+	float: right;
+	padding-right: 10px;
+}
+
+#title a, a:link{
+	color:#004C4C;
+	text-decoration:none;
+}
+
+#title a:hover, a:active{
+	color:#004C4C;
+	text-decoration:none;
+}
 /*---aside---*/
 aside{
 	float: left;
-	width: 200px;
+	width: 280px;
 	position: fixed;
 	text-align: center;
 	/*padding-top: 10px;*/
+}
+.job, .name {
+	font-size: 20px;
+	font-weight: bold;
 }
 /*---nav---*/
 nav{
 	text-align: center;
 }
 
+nav a{
+	font-size: 18px;
+	margin:10px;
+}
 /*---div---*/
 div .content{
 	float: right;
-	width: 700px;
+	width: 670px;
 }
 
 #part2, #part3{
 	display:none;
 }
+#form1,#form2,#form3{
+	padding-bottom: 10px;
+	border-bottom: solid;
+	border-width: 1px;
+	margin-bottom: 10px;
+}
+input{
+	width: 80px;
+}
 
+#file{
+	width:200px;
+}
+
+.lien{
+	padding-bottom:10px;
+	font-size: 20px;
+	border-bottom: solid;
+	border-width: 1px;
+	margin-bottom: 10px;
+}
+
+.lien a, a:link{
+	color:#007A7A;
+	text-decoration:none;
+}
+.lien a:hover, a:active{
+	color:#6db0da;
+	text-decoration:underline;
+}
+
+.sous a{
+	font-size: 13px;
+}
+/*--table--*/
+thead{
+	background-color:#ddd;
+	font-weight: bold;
+}
+
+table, input, textarea, select, li{
+	font: Helvetica, Arial, Sans-Serif;
+	line-height:130%;
+	color:#333;
+}
+
+table{
+	margin:1em 0;
+	width:100%;
+	border-collapse:collapse;
+}
+th, td{
+	padding:2px 5px;
+	}
+th{
+	text-align:left;
+	}
+
+legend p{
+	font-weight: bold;
+	font-size: 15px;
+	padding-bottom: 5px;
+}

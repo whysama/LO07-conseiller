@@ -35,6 +35,8 @@ class ServiceScolarite extends Controller
         }else{
                 $etu2 = $this->servicescolarite_model->ETU_avec_conseillet_list("all");
         }
+        //表格三
+        $ec_e = $this->EC_visualisation_nombre_etudiants_decroissant();
 
         require "application/views/ServiceScolarite/index.php";
     }
@@ -89,5 +91,10 @@ class ServiceScolarite extends Controller
             $this->servicescolarite_model->attribution_etudiant_transfert($_POST['id_ETU'],$_POST['programme']);
         }
         header('location: '.URL.'ServiceScolarite/');
+    }
+
+    public function EC_visualisation_nombre_etudiants_decroissant(){
+        $ec = $this->servicescolarite_model->EC_visualisation_nombre_etudiants_decroissant();
+        return $ec;
     }
 }

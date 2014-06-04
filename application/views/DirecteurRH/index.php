@@ -6,17 +6,17 @@
     <script src="public/js/jquery-2.1.1.js"></script>
     <script>
         jQuery(document).ready(function() {
-            jQuery("p#function1").click(function() {
+            jQuery("a#function1").click(function() {
                 jQuery("div#part1").show();
                 jQuery("div#part2").hide();
                 jQuery("div#part3").hide();
             });
-            jQuery("p#function2").click(function() {
+            jQuery("a#function2").click(function() {
                 jQuery("div#part2").show();
                 jQuery("div#part1").hide();
                 jQuery("div#part3").hide();
             });
-            jQuery("p#function3").click(function() {
+            jQuery("a#function3").click(function() {
                 jQuery("div#part3").show();
                 jQuery("div#part1").hide();
                 jQuery("div#part2").hide();
@@ -26,26 +26,31 @@
 </head>
 <body lang="fr">
     <header class="head">
-
+        <!--新增-->
+        <span id="title">
+            <a  href="<?php echo URL."DirecteurRH"?>">Attribution des conseillers à l'UTT</a>
+        </span>
+        <span id="logout">
+            <a href="<?php echo URL;?>Home/logout">Logout</a>
+        </span>
     </header>
     <div class = "global">
         <aside class="sidebar">
             <div class = "profile">
                 <img class = "avatar" src="public/img/avatar/img-DRH.JPG" alt="Aavatar">
-                <p class="job">Directeur des Resources Humaines</p>
+                <p class="job">Directeur <br/> Resources Humaines</p>
             </div>
             <nav>
-                <p id="function1">Habilitation</p>
-                <p id="function2">Modification</p>
-                <p id="function3">Visualisation</p>
+                <a id="function1">Gestion & Modification</a>
+                <a id="function2">EC & Nombre de ETU</a>
+                <a id="function3">Visualisation <br/>Etudiants - Enseigants</a>
             </nav>
         </aside>
         <div class="content">
             <div id="part1">
-              <!-- 清空EC-->
-                 <a href="<?php echo URL.'DirecteurRH/EC_vide'?>">Vider les Enseigant-Chercheur</a>
                 <!--添加EC-->
-                 <form action="<?php echo URL;?>DirecteurRH/EC_ajout" method = "POST">
+                 <form id="form1" action="<?php echo URL;?>DirecteurRH/EC_ajout" method = "POST">
+                      <legend><p>Ajuter un enseignant-chercheur:</p></legend>
                       <label>NOM</label>
                       <input type="text" name="nom" value="" required/>
                       <label>PRONOM</label>
@@ -57,11 +62,17 @@
                       <input type="submit" name="submit_ec_ajout" value="OK"/>
                  </form>
                 <!--添加EC.csv-->
-                 <form action="<?php echo URL;?>DirecteurRH/EC_ajout_liste" method = "POST" enctype="multipart/form-data">
-                      <input type="file" name="csv"/>
+                 <form id ="form2" action="<?php echo URL;?>DirecteurRH/EC_ajout_liste" method = "POST" enctype="multipart/form-data">
+                      <legend><p>Ajuter des enseignants-chercheurs par CSV:</p></legend>
+                      <input id="file" type="file" name="csv"/>
                       <input type="submit" name="submit_ec_ajout_liste" value="OK"/>
                  </form>
+                <!-- 清空EC-->
+                <div class="lien">
+                 <a href="<?php echo URL.'DirecteurRH/EC_vide'?>">Vider les Enseigant-Chercheur</a>
+                </div>
                 <!--表格-->
+                <legend><p>Les enseignants-chercheurs</p></legend>
                 <table>
                   <thead style="background-color:#ddd; font-weight: bold;">
                     <tr>
@@ -91,6 +102,7 @@
             </div>
             <div id="part2">
               <!--表格2-->
+              <legend><p>La liste des EC dans l'ordre décroissant du nombre d'étudiant conseillés</p></legend>
               <table>
                 <thead style="background-color:#ddd; font-weight: bold;">
                   <tr>
@@ -113,6 +125,7 @@
               </table>
             </div>
             <div id="part3">
+            <legend><p>Les EC avec pour chacun la liste de leurs étudiants conseillés</p></legend>
               <table>
                   <thead style="background-color:#ddd; font-weight: bold;">
                     <tr>

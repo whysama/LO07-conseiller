@@ -322,5 +322,13 @@ class ServiceScolariteModel {
                     $this->attribution_nouvel_etudiant($id_ETU);
                 }
             }
-        }
+     }
+
+    public function EC_visualisation_nombre_etudiants_decroissant(){
+            $sql_LIEN = "SELECT EC.id_EC,prenom,nom,count(LIEN.id_ETU) as num FROM EC LEFT JOIN LIEN ON EC.id_EC = LIEN.id_EC GROUP BY LIEN.id_EC ORDER BY `num` DESC";
+            $query = $this->db->prepare($sql_LIEN);
+            $query->execute();
+            return $query->fetchAll();
+    }
+
 }
