@@ -9,34 +9,23 @@ class ServiceScolarite extends Controller
     }
 
     public function index(){
-        //改变表格显示，选择要哪种表格
         echo ("<meta charset=\"UTF-8\">");
         //表格一
         if (isset($_POST['submit_select'])) {
-            if ($_POST['views'] == "all") {
-                $flag = false;
-                $etu = $this->servicescolarite_model->ETU_visualisation($_POST["programme_select"]);
-            }else{
-                $flag = true;
-                $etu = $this->servicescolarite_model->ETU_sans_conseiller($_POST["programme_select"]);
-                if ($_POST['programme_select']=="TC") {
-                    $tc = true;
-                }else{
-                    $tc = false;
-                }
-            }
+            $_SESSION['views'] = $_POST['views'];
+            $_SESSION['programme_select'] = $_POST["programme_select"];
         }else{
+            $_SESSION['views'] = "all";
+            $_SESSION['programme_select'] = "all";
+        }
+        
+        if ($_SESSION['views'] == "all") {
             $flag = false;
-            $etu = $this->servicescolarite_model->ETU_visualisation("all");
-        }
-        //表格二
-        if (isset($_POST['submit_select2'])) {
-                $etu2 = $this->servicescolarite_model->ETU_avec_conseillet_list($_POST["programme_select2"]);
+            $etu = $this->servicescolarite_model->ETU_visualisation($_SESSION['programme_select']);
         }else{
-                $etu2 = $this->servicescolarite_model->ETU_avec_conseillet_list("all");
+            $flag = true;
+            $etu = $this->servicescolarite_model->ETU_sans_conseiller($_SESSION['programme_select']);
         }
-        //表格三
-        $ec_e = $this->EC_visualisation_nombre_etudiants_decroissant();
 
         require "application/views/ServiceScolarite/index.php";
     }
@@ -81,6 +70,13 @@ class ServiceScolarite extends Controller
         header('location: '.URL.'ServiceScolarite/');
     }
 
+    public function attribution_nouvel_etudiant_form(){
+        if (isset($_POST['submit_attr'])) {
+            $this->servicescolarite_model->attribution_nouvel_etudiant($_POST['id_ETU_attr']);
+        }
+        header('location: '.URL.'ServiceScolarite/');
+    }
+
     public function attribution_nouveaux_etudiants(){
         $this->servicescolarite_model->attribution_nouveaux_etudiants();
         header('location: '.URL.'ServiceScolarite/');
@@ -95,6 +91,15 @@ class ServiceScolarite extends Controller
 
     public function EC_visualisation_nombre_etudiants_decroissant(){
         $ec = $this->servicescolarite_model->EC_visualisation_nombre_etudiants_decroissant();
-        return $ec;
+        require "application/views/ServiceScolarite/ec_nombre_etudiants.php";
+    }
+
+    public function ETU_avec_conseiller_list(){
+        if (isset($_POST['programme_etu_avec_conseiller'])) {
+            $etu = $this->servicescolarite_model->ETU_avec_conseiller_list($_POST["programme_etu_avec_conseiller"]);
+        }else{
+            $etu = $this->servicescolarite_model->ETU_avec_conseiller_list("All");
+        }
+        require "application/views/ServiceScolarite/etu_avec_conseiller.php";
     }
 }

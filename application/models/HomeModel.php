@@ -26,7 +26,6 @@ class HomeModel{
             $_SESSION['email']=$email;
             $_SESSION['pwd']=$pwd;
             $_SESSION['role']=$user[0]->role;
-            $_SESSION['login']=true;
             switch ($_SESSION['role']) {
                 case 'Etudiant':
                     return "Etudiant";

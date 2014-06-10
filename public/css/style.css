@@ -6,23 +6,22 @@ body{
 	font-size: 13px;
 }
 
+@font-face {
+	font-family: 'nouvelle_vague_final';
+	src: url('../font/nouvelle_vague_final.ttf');
+}
+
 .global{
 	width: 960px;
 	margin: 0 auto;
 }
 
+.content{
+	float: right;
+	width: 670px;
+}
 /*---anchor---*/
-a{
-	display: block;
-}
-a, a:link{
-	color:#6db0da;
-	text-decoration:none;
-}
-a:hover, a:active{
-	color:#007A7A;
-	text-decoration:underline;
-}
+
 
 /*---img---*/
 .avatar{
@@ -32,29 +31,31 @@ a:hover, a:active{
 
 /*---header---*/
 header{
-	margin-bottom: 20px;
-	background: url(../img/border_bg.gif) repeat-x center;
+	margin-bottom: 10px;
+	padding-top: 25px;
+	padding-bottom: 20px;
+	float:top;
 }
 
-#title{
-	font-size: 20px;
+.title{
+	font-size: 25px;
+	font-family: nouvelle_vague_final;
+	font-style: bold;
 	text-align: center;
+	right:0; top:0; width:100%;position:fixed;
+	background: url(../img/border_bg.gif) repeat-x center;
+	padding-top: 10px;
+	padding-bottom: 10px;
 }
 
-#logout{
-	float: right;
-	padding-right: 10px;
+.logout{
+	font-family: Helvetica;
+	float:right;
+	font-size: 14px;
+	padding-right: 20px;
+	display: inline;
 }
 
-#title a, a:link{
-	color:#004C4C;
-	text-decoration:none;
-}
-
-#title a:hover, a:active{
-	color:#004C4C;
-	text-decoration:none;
-}
 /*---aside---*/
 aside{
 	float: left;
@@ -63,9 +64,24 @@ aside{
 	text-align: center;
 	/*padding-top: 10px;*/
 }
+aside p{
+	margin-top: 10px;
+	margin-bottom: 10px;
+}
+.asideline{
+	margin:0 auto;
+	width: 80px;
+	border-bottom: 2px solid;
+	margin-bottom: 10px;
+	margin-top:10px;
+}
+
 .job, .name {
 	font-size: 20px;
 	font-weight: bold;
+}
+.name{
+	font-family: 'Vollkorn',serif;
 }
 /*---nav---*/
 nav{
@@ -73,52 +89,101 @@ nav{
 }
 
 nav a{
+	display: block;
 	font-size: 18px;
-	margin:10px;
+	margin-bottom:20px;
+	
 }
-/*---div---*/
-div .content{
-	float: right;
-	width: 670px;
-}
-
-#part2, #part3{
-	display:none;
-}
-#form1,#form2,#form3{
-	padding-bottom: 10px;
-	border-bottom: solid;
-	border-width: 1px;
-	margin-bottom: 10px;
-}
-input{
-	width: 80px;
-}
-
-#file{
-	width:200px;
-}
-
-.lien{
-	padding-bottom:10px;
-	font-size: 20px;
-	border-bottom: solid;
-	border-width: 1px;
-	margin-bottom: 10px;
-}
-
-.lien a, a:link{
+nav a, nav a:link,nav a:visited{
 	color:#007A7A;
 	text-decoration:none;
 }
-.lien a:hover, a:active{
-	color:#6db0da;
+
+nav a:hover,nav a:active{
+	color:#8FBC8F;
 	text-decoration:underline;
 }
 
-.sous a{
-	font-size: 13px;
+
+/*--form--*/
+h3{          
+	font-size:140%;
+	font-style: bold;
+	font-family: 'Vollkorn', serif;
+	margin: 0px;
+	margin-bottom: 5px;
 }
+.oneline{
+	display: inline;
+}
+.form{
+	padding-bottom: 20px;
+	border-bottom: solid;
+	border-width: 3px;
+	border-color: #ddd;
+	margin-bottom: 20px;
+}
+
+.text-input {
+  width: 100px;
+  height: 25px;
+  margin-right: 5px;
+  border: 1px solid;
+  border-radius: 8px;
+}
+
+input[type=submit]{
+	padding:5px 15px;
+	background:#D8E4E1;
+	font-family: 'Vollkorn', serif;
+	border:0 none;
+	cursor:pointer;
+	border-radius: 8px;
+}
+
+.lien{
+	padding:5px 15px;
+	background:#D8E4E1;
+	font-family: 'Vollkorn', serif;
+	border:0 none;
+	cursor:pointer;
+	border-radius: 8px;
+	margin-left: 20px;
+}
+
+.lien a, a:link{
+	color:black;
+	text-decoration:none;
+}
+.lien a:hover, a:active{
+	color:red;
+	text-decoration:underline;
+}
+
+.choise input[type=submit]{
+	padding:5px 15px;
+	background:#D8E4E1;
+	font-family: 'Vollkorn', serif;
+	border:0 none;
+	cursor:pointer;
+	border-radius: 8px;
+}
+
+.full{
+	margin-top: 5px;
+	width:100%;
+}
+
+select {
+	background: none;
+	height:23px;
+	width:110px;
+	line-height:25px;
+	border:1px solid #ddd;
+	border-radius:2px;
+}
+
+
 /*--table--*/
 thead{
 	background-color:#ddd;
@@ -143,8 +208,22 @@ th{
 	text-align:left;
 	}
 
-legend p{
-	font-weight: bold;
-	font-size: 15px;
-	padding-bottom: 5px;
+/*--div---*/
+.seperate{
+	border-top: 1px solid;
+	border-color: #ddd;
+}
+
+div #panel{
+	display: none;
+}
+
+div .flip{
+	margin-top: -10px;
+	margin-bottom: 20px;
+	text-align: center;
+	background:#D8E4E1;
+	cursor:pointer;
+	font-size: 20px;
+	color: #007A7A;
 }

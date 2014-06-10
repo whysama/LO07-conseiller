@@ -48,10 +48,15 @@ class ServiceScolariteModel {
     public function ETU_ajout_liste($filename){
         require 'public/tools/tools.php';
         $etu = getCSV($filename);
+        $sql_verifier = "SELECT * FROM ETU WHERE id_ETU = ?";
         $sql = "INSERT INTO ETU VALUE(?,?,?,?,?,?)";
         $query = $this->db->prepare($sql);
+        $q = $this->db->prepare($sql_verifier);
         foreach ($etu as $etu) {
-            $query->execute($etu);
+            $q->execute(array($etu[5]));
+            if (empty($q->fetchAll())) {
+                $query->execute($etu);
+            }
         }
     }
 
@@ -83,9 +88,9 @@ class ServiceScolariteModel {
         }
     }
 
-    public function ETU_avec_conseillet_list ($programme){
-            if ($programme == "all") {
-                $sql = "SELECT ETU.nom AS ETU_NOM, ETU.prenom AS ETU_PRENOM, EC.nom AS EC_NOM, EC.prenom AS EC_PRENOM
+    public function ETU_avec_conseiller_list ($programme){
+            if ($programme == "All") {
+                $sql = "SELECT EC.id_EC,ETU.programme,ETU.nom AS ETU_NOM, ETU.prenom AS ETU_PRENOM, EC.nom AS EC_NOM, EC.prenom AS EC_PRENOM
                         FROM ETU,LIEN,EC
                         WHERE LIEN.id_ETU = ETU.id_ETU
                         AND LIEN.id_EC=EC.id_EC";
@@ -93,7 +98,7 @@ class ServiceScolariteModel {
                 $query->execute();
                 return $query->fetchAll();
             }else{
-                $sql = "SELECT ETU.nom AS ETU_NOM, ETU.prenom AS ETU_PRENOM, EC.nom AS EC_NOM, EC.prenom AS EC_PRENOM
+                $sql = "SELECT EC.id_EC,ETU.programme,ETU.nom AS ETU_NOM, ETU.prenom AS ETU_PRENOM, EC.nom AS EC_NOM, EC.prenom AS EC_PRENOM
                         FROM ETU,LIEN,EC
                         WHERE LIEN.id_ETU = ETU.id_ETU
                         AND LIEN.id_EC=EC.id_EC
@@ -311,21 +316,28 @@ class ServiceScolariteModel {
             $pro = $this->sqlFetch($sql_select_p);
             foreach ($pro as $conseiller) {
                 if ( $conseiller->programme == $programme) {  //判断ETU的CON是否已被授权PROGRAMME
-                    $query = $this->db->prepare($sql_update_p_s);
-                    $query->execute();
+                    $exist = true;
+                    break;
                 }else{  //未被授权 对ETU修改学生 对LIEN先删再添
-                    $query = $this->db->prepare($sql_update_p_s);
-                    $query->execute();
-                    $sql_delete_from_lien = "DELETE FROM LIEN WHERE id_ETU=".$id_ETU;
-                    $query = $this->db->prepare($sql_delete_from_lien);
-                    $query->execute();
-                    $this->attribution_nouvel_etudiant($id_ETU);
+                    $exist = false;
                 }
+            }
+            
+            if ($exist) {
+                $query = $this->db->prepare($sql_update_p_s);
+                $query->execute();
+            }else{
+                $query = $this->db->prepare($sql_update_p_s);
+                $query->execute();
+                $sql_delete_from_lien = "DELETE FROM LIEN WHERE id_ETU=".$id_ETU;
+                $query = $this->db->prepare($sql_delete_from_lien);
+                $query->execute();
+                $this->attribution_nouvel_etudiant($id_ETU);
             }
      }
 
     public function EC_visualisation_nombre_etudiants_decroissant(){
-            $sql_LIEN = "SELECT EC.id_EC,prenom,nom,count(LIEN.id_ETU) as num FROM EC LEFT JOIN LIEN ON EC.id_EC = LIEN.id_EC GROUP BY LIEN.id_EC ORDER BY `num` DESC";
+            $sql_LIEN = "SELECT EC.id_EC,prenom,nom,num FROM EC LEFT JOIN (SELECT LIEN.id_EC, COUNT(LIEN.id_ETU) AS num FROM LIEN GROUP BY LIEN.id_EC) AS B ON B.id_EC = EC.id_EC ORDER BY `B`.`num` DESC,`EC`.`id_EC` ASC";
             $query = $this->db->prepare($sql_LIEN);
             $query->execute();
             return $query->fetchAll();

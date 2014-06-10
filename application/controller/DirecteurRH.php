@@ -11,9 +11,16 @@ class DirecteurRH extends Controller
     }
 
     public function index(){
-        $ec = $this->EC_visualisation();
-        $ec_e = $this->EC_visualisation_nombre_etudiants_decroissant();
-        $ec_e2 = $this->EC_visualisation_avec_etudiant();
+        //利用session来控制表格数据的传送和显示
+        if (isset($_POST['submit_role'])) {
+            $_SESSION['submit_role']=$_POST['submit_role'];
+        }
+        if (isset($_SESSION['submit_role'])) {
+            $ec = $this->EC_visualisation($_SESSION['submit_role']);
+        }else{
+            $ec = $this->EC_visualisation("Enseigants-Chercheurs");
+        }
+
         require "application/views/DirecteurRH/index.php";
     }
 
@@ -22,8 +29,14 @@ class DirecteurRH extends Controller
         header('location: '.URL.'DirecteurRH/');
     }
 
+    public function EC_suppression($id_EC){
+        if (isset($id_EC)) {
+            $this->directeur_model->EC_suppression($id_EC);
+        }
+        header('location: '.URL.'DirecteurRH/');
+    }
+
     public function EC_ajout(){
-        echo "Ajout EC";
         if(isset($_POST["submit_ec_ajout"])){
             $this->directeur_model->EC_ajout($_POST["nom"],$_POST["prenom"],$_POST["bureau"],$_POST["pole"]);
         }
@@ -37,26 +50,19 @@ class DirecteurRH extends Controller
         header('location: '.URL.'DirecteurRH/');
     }
 
-    public function EC_visualisation(){
-        $ec = $this->directeur_model->EC_visualisation();
+    public function EC_visualisation($role){
+        $ec = $this->directeur_model->EC_visualisation($role);
         return $ec;
-    }
-
-    public function EC_suppression($id_EC){
-        if (isset($id_EC)) {
-            $this->directeur_model->EC_suppression($id_EC);
-        }
-        header('location: '.URL.'DirecteurRH/');
     }
 
     public function EC_visualisation_nombre_etudiants_decroissant(){
         $ec = $this->directeur_model->EC_visualisation_nombre_etudiants_decroissant();
-        return $ec;
+        require "application/views/DirecteurRH/ec_nombre_etudiants.php";
     }
 
     public function EC_visualisation_avec_etudiant(){
         $ec = $this->directeur_model->EC_visualisation_avec_etudiant();
-        return $ec;
+        require "application/views/DirecteurRH/ec_avec_etudiant.php";
     }
 
 }

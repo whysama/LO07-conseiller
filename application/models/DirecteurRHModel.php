@@ -69,15 +69,24 @@ class DirecteurRHModel{
     public function EC_ajout_liste($filename){
         require 'public/tools/tools.php';
         $ec = getCSV($filename);
+        $sql_verifier = "SELECT * FROM EC WHERE id_EC = ?";
         $sql = "INSERT INTO EC VALUES(?,?,?,?,?,?)";
         $query = $this->db->prepare($sql);
-        foreach ($ec as $value) {
-            $query->execute($value);
+        $q = $this->db->prepare($sql_verifier);
+        foreach ($ec as $ec) {
+            $q->execute(array($ec[0]));
+            if (empty($q->fetchAll())) {
+                $query->execute($ec);
+            }
         }
     }
 
-    public function EC_visualisation(){
-        $sql = "SELECT * FROM EC  WHERE id_EC IN (SELECT id_EC FROM CONSEILLER)";
+    public function EC_visualisation($role){
+        if ($role == 'Enseigants-Chercheurs') {
+            $sql = "SELECT * FROM EC ";
+        }else if ($role == 'Conseillers') {
+            $sql = "SELECT * FROM EC WHERE id_EC IN (SELECT id_EC FROM CONSEILLER)";
+        }
         $query = $this->db->prepare($sql);
         $query->execute();
         return $query->fetchAll();
@@ -108,7 +117,7 @@ class DirecteurRHModel{
     }
 
     public function EC_visualisation_nombre_etudiants_decroissant(){
-            $sql_LIEN = "SELECT EC.id_EC,prenom,nom,count(LIEN.id_ETU) as num FROM EC LEFT JOIN LIEN ON EC.id_EC = LIEN.id_EC GROUP BY LIEN.id_EC ORDER BY `num` DESC";
+            $sql_LIEN = "SELECT EC.id_EC,prenom,nom,num FROM EC LEFT JOIN (SELECT LIEN.id_EC, COUNT(LIEN.id_ETU) AS num FROM LIEN GROUP BY LIEN.id_EC) AS B ON B.id_EC = EC.id_EC ORDER BY `B`.`num` DESC,`EC`.`id_EC` ASC";
             $query = $this->db->prepare($sql_LIEN);
             $query->execute();
             return $query->fetchAll();

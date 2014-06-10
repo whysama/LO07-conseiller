@@ -106,7 +106,7 @@ class ResponsableModel{
      * 显示自己programme所有etu和他们的conseiller
      */
     public function Habilitation_visualisation_etu_ec(){
-        $sql = "SELECT ETU.nom AS ETU_NOM, ETU.prenom AS ETU_PRENOM, EC.nom AS EC_NOM, EC.prenom AS EC_PRENOM
+        $sql = "SELECT EC.id_EC,ETU.nom AS ETU_NOM, ETU.prenom AS ETU_PRENOM, EC.nom AS EC_NOM, EC.prenom AS EC_PRENOM
                 FROM ETU,LIEN,EC
                 WHERE LIEN.id_ETU = ETU.id_ETU
                 AND LIEN.id_EC=EC.id_EC
@@ -121,14 +121,14 @@ class ResponsableModel{
      */
     public function EC_visualisation($pole){
         if ($pole == "ALL") {
-            $sql = "SELECT * FROM EC ";
+            $sql = "SELECT * FROM EC WHERE id_EC not in (SELECT id_EC FROM CONSEILLER WHERE programme = ? )";
             $query = $this->db->prepare($sql);
-            $query->execute();
+            $query->execute(array($this->getProgramme()));
             return $query->fetchAll();
         }else{
-            $sql = "SELECT * FROM EC WHERE pole = ?";
+            $sql = "SELECT * FROM EC WHERE pole = ? AND id_EC not in (SELECT id_EC FROM CONSEILLER WHERE programme = ? )";
             $query = $this->db->prepare($sql);
-            $query->execute(array($pole));
+            $query->execute(array($pole,$this->getProgramme()));
             return $query->fetchAll();
         }
     }
