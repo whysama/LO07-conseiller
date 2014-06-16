@@ -13,14 +13,14 @@ class ServiceScolarite extends Controller
         //表格一
 
         if (isset($_POST['submit_select'])) {
-            $_SESSION['views2'] = $_POST['views'];
+            $_SESSION['views'] = $_POST['views'];
             $_SESSION['programme_select'] = $_POST["programme_select"];
-        }elseif($_SESSION['views2']== NULL){
-            $_SESSION['views2'] = "all";
+        }elseif(is_null($_SESSION['views'])){
+            $_SESSION['views'] = "all";
             $_SESSION['programme_select'] = "all";  
         }
         
-        if ($_SESSION['views2'] == "all") {
+        if ($_SESSION['views'] == "all") {
             $flag = false;
             $etu = $this->servicescolarite_model->ETU_visualisation($_SESSION['programme_select']);
         }else{

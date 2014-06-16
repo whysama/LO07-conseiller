@@ -2,6 +2,7 @@
 /**
  *Projet LO07 P14
  */
+error_reporting(0);
 
 require 'application/config/config.php';
 

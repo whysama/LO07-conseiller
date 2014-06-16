@@ -27,7 +27,7 @@ class Home extends Controller
         unset($_SESSION['role']);
         unset($_SESSION['submit_role']);
         unset($_SESSION['submit_pole']);
-        unset($$_SESSION['views']);
+        unset($_SESSION['views']);
         unset($_SESSION['programme_select']);
         header('location: '.URL."Home");
     }
