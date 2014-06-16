@@ -11,15 +11,16 @@ class ServiceScolarite extends Controller
     public function index(){
         echo ("<meta charset=\"UTF-8\">");
         //表格一
+
         if (isset($_POST['submit_select'])) {
-            $_SESSION['views'] = $_POST['views'];
+            $_SESSION['views2'] = $_POST['views'];
             $_SESSION['programme_select'] = $_POST["programme_select"];
-        }else{
-            $_SESSION['views'] = "all";
-            $_SESSION['programme_select'] = "all";
+        }elseif($_SESSION['views2']== NULL){
+            $_SESSION['views2'] = "all";
+            $_SESSION['programme_select'] = "all";  
         }
         
-        if ($_SESSION['views'] == "all") {
+        if ($_SESSION['views2'] == "all") {
             $flag = false;
             $etu = $this->servicescolarite_model->ETU_visualisation($_SESSION['programme_select']);
         }else{
